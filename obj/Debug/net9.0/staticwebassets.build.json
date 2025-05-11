@@ -1,12 +1,20 @@
 {
   "Version": 1,
-  "Hash": "ApjBWYHnetHgEw0/vRGkkqFvYw2/T2IYO1zs2Y6M8lA=",
+  "Hash": "M0YCpeA0HyUYfT0E7nub0ke3fJN/kqc+BtPW2lm8VUs=",
   "Source": "AspNet-school2",
   "BasePath": "_content/AspNet-school2",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "AspNet-school2\\wwwroot",
+      "Source": "AspNet-school2",
+      "ContentRoot": "D:\\Cy\\school2\\Asp.Net-school2\\wwwroot\\",
+      "BasePath": "_content/AspNet-school2",
+      "Pattern": "**"
+    }
+  ],
   "Assets": [],
   "Endpoints": []
 }

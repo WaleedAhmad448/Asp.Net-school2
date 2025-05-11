@@ -334,3 +334,5 @@ D:\Cy\school2\Asp.Net-school2\obj\Debug\net9.0\refint\AspNet-school2.dll
 D:\Cy\school2\Asp.Net-school2\obj\Debug\net9.0\AspNet-school2.pdb
 D:\Cy\school2\Asp.Net-school2\obj\Debug\net9.0\AspNet-school2.genruntimeconfig.cache
 D:\Cy\school2\Asp.Net-school2\obj\Debug\net9.0\ref\AspNet-school2.dll
+D:\Cy\school2\Asp.Net-school2\bin\Debug\net9.0\AspNet-school2.staticwebassets.runtime.json
+D:\Cy\school2\Asp.Net-school2\obj\Debug\net9.0\AspNet-school2.sourcelink.json

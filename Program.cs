@@ -14,6 +14,10 @@ builder.Services.AddDbContext<SchoolDbContext>(options =>
 
 // Register services
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
+
+// تسجيل خدمة تخزين الملفات
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 // Enable CORS
 builder.Services.AddCors(options =>
