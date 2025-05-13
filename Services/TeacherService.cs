@@ -13,46 +13,36 @@ namespace AspNet_school2.Services
     {
         private readonly SchoolDbContext _context;
         private readonly IFileStorageService _fileStorage;
-        private readonly ILogger<TeacherService> _logger; // إضافة تسجيل الأخطاء
 
-        public TeacherService(SchoolDbContext context, IFileStorageService fileStorage, ILogger<TeacherService> logger)
+        public TeacherService(SchoolDbContext context, IFileStorageService fileStorage)
         {
             _context = context;
             _fileStorage = fileStorage;
-            _logger = logger;
         }
 
         public async Task<Teacher> RegisterTeacherAsync(TeacherRegistrationDto registrationDto)
         {
-            try
+            // Generate a unique teacher number
+            string teacherNumber = GenerateTeacherNumber();
+
+            // Create a new teacher from the registration DTO
+            var teacher = new Teacher
             {
-                // Generate a unique teacher number
-                string teacherNumber = await GenerateUniqueTeacherNumberAsync();
+                FullName = registrationDto.FullName,
+                DateOfBirth = registrationDto.DateOfBirth,
+                TeacherNumber = teacherNumber,
+                Address = registrationDto.Address,
+                PhoneNumber = registrationDto.PhoneNumber,
+                Email = registrationDto.Email,
+                Subject = registrationDto.Subject,
+                Qualification = registrationDto.Qualification,
+                HireDate = DateTime.Now
+            };
 
-                // Create a new teacher from the registration DTO
-                var teacher = new Teacher
-                {
-                    FullName = registrationDto.FullName,
-                    DateOfBirth = registrationDto.DateOfBirth,
-                    TeacherNumber = teacherNumber,
-                    Address = registrationDto.Address,
-                    PhoneNumber = registrationDto.PhoneNumber,
-                    Email = registrationDto.Email,
-                    Subject = registrationDto.Subject,
-                    Qualification = registrationDto.Qualification,
-                    HireDate = DateTime.Now
-                };
+            _context.Teachers.Add(teacher);
+            await _context.SaveChangesAsync();
 
-                _context.Teachers.Add(teacher);
-                await _context.SaveChangesAsync();
-
-                return teacher;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error registering teacher");
-                throw; // إعادة رمي الخطأ ليتم التعامل معه في مكان آخر (مثل الـ Controller)
-            }
+            return teacher;
         }
 
         public async Task<IEnumerable<Teacher>> GetAllTeachersAsync()
@@ -73,86 +63,54 @@ namespace AspNet_school2.Services
 
         public async Task<bool> UpdateTeacherAsync(int id, TeacherRegistrationDto updateDto)
         {
-            try
-            {
-                var teacher = await _context.Teachers.FindAsync(id);
+            var teacher = await _context.Teachers.FindAsync(id);
 
-                if (teacher == null)
-                    return false;
+            if (teacher == null)
+                return false;
 
-                teacher.FullName = updateDto.FullName;
-                teacher.DateOfBirth = updateDto.DateOfBirth;
-                teacher.Address = updateDto.Address;
-                teacher.PhoneNumber = updateDto.PhoneNumber;
-                teacher.Email = updateDto.Email;
-                teacher.Subject = updateDto.Subject;
-                teacher.Qualification = updateDto.Qualification;
+            teacher.FullName = updateDto.FullName;
+            teacher.DateOfBirth = updateDto.DateOfBirth;
+            teacher.Address = updateDto.Address;
+            teacher.PhoneNumber = updateDto.PhoneNumber;
+            teacher.Email = updateDto.Email;
+            teacher.Subject = updateDto.Subject;
+            teacher.Qualification = updateDto.Qualification;
 
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating teacher with id: {id}", id);
-                throw;
-            }
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteTeacherAsync(int id)
         {
-            try
-            {
-                var teacher = await _context.Teachers.FindAsync(id);
+            var teacher = await _context.Teachers.FindAsync(id);
 
-                if (teacher == null)
-                    return false;
+            if (teacher == null)
+                return false;
 
-                _context.Teachers.Remove(teacher);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting teacher with id: {id}", id);
-                throw;
-            }
+            _context.Teachers.Remove(teacher);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> UpdateTeacherImageAsync(int id, IFormFile image)
         {
-            try
+            var teacher = await _context.Teachers.FindAsync(id);
+
+            if (teacher == null)
+                return false;
+
+            // Delete old image if exists
+            if (!string.IsNullOrEmpty(teacher.ProfileImagePath))
             {
-                var teacher = await _context.Teachers.FindAsync(id);
-
-                if (teacher == null)
-                    return false;
-
-                // Delete old image if exists
-                if (!string.IsNullOrEmpty(teacher.ProfileImagePath))
-                {
-                    try
-                    {
-                        _fileStorage.DeleteFile(teacher.ProfileImagePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error deleting old profile image for teacher with id: {id}", id);
-                        // لا ترمي الخطأ هنا، استمر في العملية
-                    }
-                }
-
-                // Save new image
-                string imagePath = await _fileStorage.SaveFileAsync(image);
-                teacher.ProfileImagePath = imagePath;
-
-                await _context.SaveChangesAsync();
-                return true;
+                _fileStorage.DeleteFile(teacher.ProfileImagePath);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating teacher image for teacher with id: {id}", id);
-                throw;
-            }
+
+            // Save new image
+            string imagePath = await _fileStorage.SaveFileAsync(image);
+            teacher.ProfileImagePath = imagePath;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<(IEnumerable<Teacher> Teachers, int TotalCount)> GetPagedTeachersAsync(int page, int pageSize, string search = "")
@@ -182,19 +140,13 @@ namespace AspNet_school2.Services
             return (teachers, totalCount);
         }
 
-        private async Task<string> GenerateUniqueTeacherNumberAsync()
+        private string GenerateTeacherNumber()
         {
-            string teacherNumber;
-            do
-            {
-                // Generate a teacher number in format: T + Year + Random 3-digit number
-                string year = DateTime.Now.Year.ToString();
-                string randomDigits = new Random().Next(100, 999).ToString();
+            // Generate a teacher number in format: T + Year + Random 3-digit number
+            string year = DateTime.Now.Year.ToString();
+            string randomDigits = new Random().Next(100, 999).ToString();
 
-                teacherNumber = $"T{year}{randomDigits}";
-            } while (await _context.Teachers.AnyAsync(t => t.TeacherNumber == teacherNumber)); // التأكد من عدم وجود رقم مماثل
-
-            return teacherNumber;
+            return $"T{year}{randomDigits}";
         }
     }
 }
