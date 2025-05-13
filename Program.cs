@@ -15,6 +15,7 @@ builder.Services.AddDbContext<SchoolDbContext>(options =>
 // Register services
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
+builder.Services.AddScoped<IAdministratorService, AdministratorService>();
 
 // تسجيل خدمة تخزين الملفات
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
@@ -55,5 +56,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseStaticFiles(); // Enable serving static files
 
 app.Run();
