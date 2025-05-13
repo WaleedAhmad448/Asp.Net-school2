@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AspNet-school2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+781c169b3c48a77a444d59ebace448fe87d7f377")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd550c601831c0a1425f21d578af669a57ed902d")]
 [assembly: System.Reflection.AssemblyProductAttribute("AspNet-school2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AspNet-school2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
